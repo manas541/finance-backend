@@ -1,98 +1,198 @@
 # Finance Dashboard Backend
 
-Spring Boot REST API for managing financial records with role-based access control.
+A complete REST API backend for managing financial records with role-based access control. Built with Spring Boot, PostgreSQL, and Docker.
 
-## Features
+**🔗 Live API:** https://finance-backend-1-vmei.onrender.com/api/v1
 
-- **User Management**: Create, update, delete users
-- **Role Management**: VIEWER, ANALYST, ADMIN roles
-- **Financial Records**: Create income/expense transactions
-- **Access Control**: Role-based permissions
-- **Dashboard**: Income, expenses, balance summaries
-- **PostgreSQL**: Persistent data storage
+## 📋 Quick Links
 
-## Technology Stack
+- **Hosted URL:** https://finance-backend-1-vmei.onrender.com
+- **API Base URL:** https://finance-backend-1-vmei.onrender.com/api/v1
+- **GitHub Repository:** https://github.com/manas541/finance-backend
+- **Local URL:** http://localhost:8080/api/v1
 
-- **Java 17**
-- **Spring Boot 4.0.5**
-- **Spring Data JPA**
-- **PostgreSQL**
-- **Maven**
-- **Lombok**
+## ✨ Features
 
-## Prerequisites
+### User Management
+- Create, update, delete users
+- Three role types: VIEWER, ANALYST, ADMIN
+- User activation/deactivation
+- Soft delete (data preservation)
+- Role-based permissions
+
+### Financial Records Management
+- Create income/expense transactions
+- View, update, delete records
+- Filter by date, category, type
+- Input validation
+- Soft delete support
+
+### Role-Based Access Control
+
+| Feature | VIEWER | ANALYST | ADMIN |
+|---------|--------|---------|-------|
+| View Dashboard | ✅ | ✅ | ✅ |
+| View Own Records | ✅ | ✅ | ✅ |
+| Create Records | ❌ | ✅ | ✅ |
+| Update Own Records | ❌ | ✅ | ✅ |
+| Delete Records | ❌ | ❌ | ✅ |
+| View Any Records | ❌ | ❌ | ✅ |
+| Manage Users | ❌ | ❌ | ✅ |
+| Manage Roles | ❌ | ❌ | ✅ |
+
+### Dashboard Analytics
+- Total income calculation
+- Total expenses calculation
+- Net balance (Income - Expenses)
+- Category-wise breakdown
+- Transaction counts
+
+## 🛠️ Technology Stack
+
+- **Language:** Java 17
+- **Framework:** Spring Boot 3.1.5
+- **ORM:** JPA/Hibernate
+- **Database:** PostgreSQL
+- **Build Tool:** Maven
+- **Utilities:** Lombok
+- **Deployment:** Docker + Render
+- **API Type:** RESTful
+
+
+### Key Components
+
+- **25 Java Classes** - Well-organized, fully commented
+- **22 REST API Endpoints** - CRUD operations for all entities
+- **3 Database Tables** - roles, users, financial_records
+- **4 DTO Classes** - Type-safe API contracts (passwords excluded)
+- **Access Control** - Centralized permission logic
+- **Error Handling** - Meaningful error responses
+- **Docker Support** - Production-ready containerization
+
+## 🚀 Getting Started
+
+### Prerequisites
 
 - Java 17+
-- PostgreSQL
+- PostgreSQL (local development)
 - Maven 3.6+
+- Docker (optional, for containerized deployment)
 
-## Setup
+### Local Setup (Without Docker)
 
-### 1. Create Database
+#### 1. Create Database
 ```bash
 psql -U postgres
 CREATE DATABASE finance_db;
 \q
 ```
 
-### 2. Update Configuration
+#### 2. Clone Repository
+```bash
+git clone https://github.com/manas541/finance-backend.git
+cd finance-backend
+```
+
+#### 3. Update Configuration
 
 Edit `src/main/resources/application.properties`:
 ```properties
-spring.datasource.password=your_password
+spring.datasource.password=your_postgres_password
 ```
 
-### 3. Run Application
+#### 4. Run Application
 ```bash
 mvn clean spring-boot:run
 ```
 
-Server starts at: `http://localhost:8080/api/v1`
+**Server starts at:** http://localhost:8080/api/v1
 
-## API Endpoints
+### Local Setup (With Docker)
+
+#### 1. Start Services
+```bash
+docker-compose up
+```
+
+**Both PostgreSQL and Backend start automatically**
+
+#### 2. Access API
+
+http://localhost:8080/api/v1
+
+#### 3. Stop Services
+```bash
+docker-compose down
+```
+
+## 📡 API Endpoints
+
+### Base URL
+- **Local:** http://localhost:8080/api/v1
+- **Hosted:** https://finance-backend-1-vmei.onrender.com/api/v1
 
 ### Roles (6 endpoints)
-- `GET /roles` - Get all roles
-- `POST /roles` - Create role
-- `GET /roles/{id}` - Get role by ID
-- `PUT /roles/{id}` - Update role
-- `DELETE /roles/{id}` - Delete role
+
+| Method | Endpoint | Description | Role |
+|--------|----------|-------------|------|
+| GET | `/roles` | Get all roles | ALL |
+| POST | `/roles` | Create role | ADMIN |
+| GET | `/roles/{id}` | Get role by ID | ALL |
+| PUT | `/roles/{id}` | Update role | ADMIN |
+| DELETE | `/roles/{id}` | Delete role | ADMIN |
 
 ### Users (9 endpoints)
-- `GET /users` - Get all users
-- `POST /users` - Create user
-- `GET /users/{id}` - Get user by ID
-- `GET /users/email/{email}` - Get by email
-- `PUT /users/{id}` - Update user
-- `DELETE /users/{id}` - Delete user
-- `POST /users/{id}/activate` - Activate
-- `POST /users/{id}/deactivate` - Deactivate
-- `GET /users/active/all` - Get active users
+
+| Method | Endpoint | Description | Role |
+|--------|----------|-------------|------|
+| GET | `/users` | Get all users | ALL |
+| POST | `/users` | Create user | ADMIN |
+| GET | `/users/{id}` | Get user by ID | ALL |
+| GET | `/users/email/{email}` | Get by email | ALL |
+| GET | `/users/active/all` | Get active users | ALL |
+| PUT | `/users/{id}` | Update user | ADMIN |
+| DELETE | `/users/{id}` | Delete user | ADMIN |
+| POST | `/users/{id}/activate` | Activate user | ADMIN |
+| POST | `/users/{id}/deactivate` | Deactivate user | ADMIN |
 
 ### Financial Records (7 endpoints)
-- `GET /records?userId=1` - Get my records
-- `POST /records?userId=1` - Create record
-- `GET /records/{id}?userId=1` - Get record by ID
-- `PUT /records/{id}?userId=1` - Update record
-- `DELETE /records/{id}?userId=1` - Delete record
-- `GET /records/dashboard/summary?userId=1` - Dashboard data
 
-## Example Requests
+| Method | Endpoint | Description | Role |
+|--------|----------|-------------|------|
+| GET | `/records?userId=1` | Get my records | VIEWER, ANALYST, ADMIN |
+| POST | `/records?userId=1` | Create record | ANALYST, ADMIN |
+| GET | `/records/{id}?userId=1` | Get record by ID | Owner, ADMIN |
+| PUT | `/records/{id}?userId=1` | Update record | ANALYST, ADMIN |
+| DELETE | `/records/{id}?userId=1` | Delete record | ADMIN |
+| GET | `/records/dashboard/summary?userId=1` | Dashboard data | ALL |
+| GET | `/records/user/{userId}?requestingUserId=1` | Get user records | ADMIN |
 
-### Create Role
+## 📝 Example API Requests
+
+### 1. Create a Role
 ```bash
-curl -X POST http://localhost:8080/api/v1/roles \
+curl -X POST https://finance-backend-1-vmei.onrender.com/api/v1/roles \
   -H "Content-Type: application/json" \
   -d '{
     "name": "VIEWER",
-    "description": "Can view dashboard",
+    "description": "Can only view dashboard",
     "roleType": "VIEWER"
   }'
 ```
 
-### Create User
+**Response (201 Created):**
+```json
+{
+    "id": 1,
+    "name": "VIEWER",
+    "description": "Can only view dashboard",
+    "roleType": "VIEWER"
+}
+```
+
+### 2. Create a User
 ```bash
-curl -X POST http://localhost:8080/api/v1/users \
+curl -X POST https://finance-backend-1-vmei.onrender.com/api/v1/users \
   -H "Content-Type: application/json" \
   -d '{
     "name": "John Doe",
@@ -102,9 +202,27 @@ curl -X POST http://localhost:8080/api/v1/users \
   }'
 ```
 
-### Create Financial Record
+**Response (201 Created):**
+```json
+{
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": {
+        "id": 1,
+        "name": "VIEWER",
+        "description": "Can only view dashboard",
+        "roleType": "VIEWER"
+    },
+    "isActive": true,
+    "createdAt": "2024-01-15T10:30:00",
+    "updatedAt": "2024-01-15T10:30:00"
+}
+```
+
+### 3. Create Financial Record
 ```bash
-curl -X POST "http://localhost:8080/api/v1/records?userId=1" \
+curl -X POST "https://finance-backend-1-vmei.onrender.com/api/v1/records?userId=1" \
   -H "Content-Type: application/json" \
   -d '{
     "amount": 5000.00,
@@ -115,59 +233,24 @@ curl -X POST "http://localhost:8080/api/v1/records?userId=1" \
   }'
 ```
 
-## Role Permissions
+**Response (201 Created):**
+```json
+{
+    "id": 1,
+    "amount": 5000.00,
+    "type": "INCOME",
+    "category": "SALARY",
+    "transactionDate": "2024-01-15",
+    "notes": "Monthly salary",
+    "createdByUserId": 1,
+    "createdAt": "2024-01-15T10:30:00",
+    "updatedAt": "2024-01-15T10:30:00"
+}
+```
 
-### VIEWER
-- ✅ View dashboard
-- ✅ View records
-- ❌ Create records
-- ❌ Update records
-- ❌ Delete records
+### 4. Get Dashboard Summary
+```bash
+curl -X GET "https://finance-backend-1-vmei.onrender.com/api/v1/records/dashboard/summary?userId=1"
+```
 
-### ANALYST
-- ✅ View dashboard
-- ✅ View own records
-- ✅ Create records
-- ✅ Update own records
-- ❌ Delete records
-
-### ADMIN
-- ✅ Full access
-- ✅ View all records
-- ✅ Create records
-- ✅ Update any record
-- ✅ Delete records
-
-## Testing
-
-Use Postman or Thunder Client:
-
-1. Create roles (VIEWER, ANALYST, ADMIN)
-2. Create users with different roles
-3. Create financial records
-4. Test access control (VIEWER cannot create)
-
-## Database Schema
-
-### roles
-- id, name, description, role_type
-
-### users
-- id, name, email, password, role_id, is_active, is_deleted, created_at, updated_at
-
-### financial_records
-- id, created_by_user_id, amount, type, category, transaction_date, notes, is_deleted, created_at, updated_at
-
-## Future Enhancements
-
-- JWT Authentication
-- Pagination
-- Unit tests
-- Swagger documentation
-- Email notifications
-- Advanced filtering
-
-
-## Author
-
-Manas Purohit
+**Response (200 OK):**
